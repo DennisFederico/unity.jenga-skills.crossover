@@ -20,7 +20,7 @@ namespace managers {
         }
 
         public void LoadScene(Scene scene) {
-            SceneManager.LoadScene(scene.ToString());
+            //SceneManager.LoadScene(scene.ToString());
         }
     }
 }

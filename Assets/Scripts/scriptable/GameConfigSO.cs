@@ -1,10 +1,15 @@
 using UnityEngine;
 
 namespace scriptable {
-    [CreateAssetMenu(menuName = "GameConfig")]
+    [CreateAssetMenu(menuName = "GameConfigSO")]
     public class GameConfigSO : ScriptableObject {
-        [SerializeField] private string baseUrl;
-
-        public string BaseUrl => baseUrl;
+        public DataLoadSource dataLoadSource;
+        public string baseUrl;
+        public int maxStacks;
+    }
+    
+    public enum DataLoadSource {
+        Local,
+        Remote
     }
 }

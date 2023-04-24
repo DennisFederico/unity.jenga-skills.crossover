@@ -6,9 +6,10 @@ namespace model {
     /// Class that represents the mastery level of a specific domain skill.
     /// </summary>
 
-    [System.Serializable]
+    [Serializable]
     public class SkillData {
 
+        // ReSharper disable IdentifierTypo
         public int id;
         public string subject;
         public string grade;
@@ -18,40 +19,37 @@ namespace model {
         public string cluster;
         public string standardid;
         public string standarddescription;
+        // ReSharper restore IdentifierTypo
 
         public SkillDataKey GetSkillOrderKey() {
             return new SkillDataKey(domain, cluster, standardid, id);
         }
 
         public override string ToString() {
-            return $"{subject} {grade} {domainid} {mastery}";
+            return $"{grade} - {domain}\n{cluster}\n{standardid} - {standarddescription}";
         }
         
         public struct SkillDataKey : IComparable<SkillDataKey> {
-            private string domain;
-            private string cluster;
-            private string standardid;
-            private int id;
+            private readonly string _domain;
+            private readonly string _cluster;
+            private readonly string _standardId;
+            private readonly int _id;
 
-            public SkillDataKey(string domain, string cluster, string standardid, int id) {
-                this.domain = domain;
-                this.cluster = cluster;
-                this.standardid = standardid;
-                this.id = id;
+            public SkillDataKey(string domain, string cluster, string standardId, int id) {
+                _domain = domain;
+                _cluster = cluster;
+                _standardId = standardId;
+                _id = id;
             }
 
             public int CompareTo(SkillDataKey other) {
-                var domainComparison = string.Compare(domain, other.domain, StringComparison.Ordinal);
+                var domainComparison = string.Compare(_domain, other._domain, StringComparison.Ordinal);
                 if (domainComparison != 0) return domainComparison;
-                var clusterComparison = string.Compare(cluster, other.cluster, StringComparison.Ordinal);
+                var clusterComparison = string.Compare(_cluster, other._cluster, StringComparison.Ordinal);
                 if (clusterComparison != 0) return clusterComparison;
-                var standardidComparison = string.Compare(standardid, other.standardid, StringComparison.Ordinal);
-                if (standardidComparison != 0) return standardidComparison;
-                return id.CompareTo(other.id);
-            }
-            
-            public override string ToString() {
-                return $"{domain} {cluster} {standardid} {id}";
+                var standardIdComparison = string.Compare(_standardId, other._standardId, StringComparison.Ordinal);
+                if (standardIdComparison != 0) return standardIdComparison;
+                return _id.CompareTo(other._id);
             }
         }
     }
