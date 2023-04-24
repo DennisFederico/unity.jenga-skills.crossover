@@ -1,0 +1,11 @@
+{
+  "id": 2,
+  "subject": "Math",
+  "grade": "6th Grade",
+  "mastery": 2,
+  "domainid": "RP",
+  "domain": "Ratios & Proportional Relationships",
+  "cluster": "Understand ratio concepts and use ratio reasoning to solve problems.",
+  "standardid": "CCSS.MATH.CONTENT.6.RP.A.1",
+  "standarddescription": "Understand the concept of a ratio and use ratio language to describe a ratio relationship between two quantities. For example, \"The ratio of wings to beaks in the bird house at the zoo was 2:1, because for every 2 wings there was 1 beak.\" \"For every vote candidate A received, candidate C received nearly three votes.\""
+}
