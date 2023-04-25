@@ -4,6 +4,7 @@ using behaviours.block;
 using behaviours.config;
 using model;
 using scriptable;
+using ui;
 using UnityEngine;
 using utils;
 
@@ -23,6 +24,7 @@ namespace managers {
 
         private readonly List<Transform> _stacks = new();
         private readonly List<Transform> _focusPov = new();
+        private readonly Dictionary<string, int> _gradeStackIndexMap = new();
 
         private float StackXOffset(int numStack) => numStack * (_stackWidth + _stacksPadding);
         private readonly Quaternion _rotation90 = Quaternion.Euler(0, 90, 0);
@@ -49,9 +51,10 @@ namespace managers {
             int stackNum = 0;
             foreach (var grade in skillsByGrade.Keys) {
                 var stack = new GameObject(grade);
+                _stacks.Add(stack.transform);
+                _gradeStackIndexMap.Add(grade, stackNum);
                 BuildStackBlocks(stack.transform, skillsByGrade[grade].Values);
                 stack.transform.position = new Vector3(StackXOffset(stackNum), 0, 0);
-                _stacks.Add(stack.transform);
                 CreateStackLabel(stackNum, grade);
                 _focusPov.Add(CreateStackFocusPoint(stack.transform, stackNum));
 
@@ -89,7 +92,7 @@ namespace managers {
         private void CreateStackLabel(int stackNum, string grade) {
             var stackLabelCanvas = Instantiate(_gameConfig.stackLabelCanvasPrefab);
             stackLabelCanvas.name = $"StackLabelCanvas_{stackNum}";
-            stackLabelCanvas.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = grade;
+            stackLabelCanvas.GetComponent<StackLabelUI>().SetGrade(grade);
 
             var canvasRect = stackLabelCanvas.GetComponent<RectTransform>();
             var scale = Utils.CanvasToWorldScale(_stackWidth * 1.5f, canvasRect.rect.width);
@@ -121,6 +124,14 @@ namespace managers {
 
         public Transform GetStack(int stackIndex) {
             return _stacks[stackIndex];
+        }
+        
+        public Transform GetStack(string grade) {
+            return _stacks[GetStackIndex(grade)];
+        }
+        
+        public int GetStackIndex(string grade) {
+            return _gradeStackIndexMap[grade];
         }
     }
 }

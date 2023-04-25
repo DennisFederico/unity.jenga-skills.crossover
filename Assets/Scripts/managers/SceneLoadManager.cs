@@ -8,7 +8,7 @@ namespace managers {
             LoadingScene,
             GameScene,
         }
-        
+
         public static SceneLoadManager Instance { get; private set; }
 
         private void Awake() {
@@ -17,10 +17,12 @@ namespace managers {
             } else {
                 Destroy(gameObject);
             }
+
+            DontDestroyOnLoad(gameObject);
         }
 
         public void LoadScene(Scene scene) {
-            //SceneManager.LoadScene(scene.ToString());
+            SceneManager.LoadScene(scene.ToString());
         }
     }
 }

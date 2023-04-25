@@ -1,3 +1,4 @@
+using System;
 using behaviours.block;
 using behaviours.config;
 using model;
@@ -8,9 +9,19 @@ namespace managers {
     [RequireComponent(typeof(GameConfigHolder), typeof(StacksManager))]
     public class GameManager : MonoBehaviour {
         
+        public static GameManager Instance { get; private set; }
+        
         private GameConfigSO _gameConfig;
         private int _totalStacks;
         private int _currentStackIndex;
+
+        private void Awake() {
+            if (Instance == null) {
+                Instance = this;
+            } else {
+                Destroy(gameObject);
+            }
+        }
 
         private void Start() {
             StacksManager.Instance.OnStacksBuilt += () => {
@@ -21,7 +32,7 @@ namespace managers {
 
         private void Update() {
             if (Input.GetKeyDown(KeyCode.Space)) {
-                TestSelectedStack(_currentStackIndex);
+                TestStack(_currentStackIndex);
             }
         }
 
@@ -39,8 +50,17 @@ namespace managers {
             CameraController.Instance.SetCameraTarget(StacksManager.Instance.GetStackFocusPoint(_currentStackIndex));
         }
         
-        private void TestSelectedStack(int stackIndex, SkillMasteryLevel masteryLevel = SkillMasteryLevel.Glass) {
+        public void TestStack(string grade, SkillMasteryLevel masteryLevel = SkillMasteryLevel.Glass) {
+            var stack = StacksManager.Instance.GetStack(grade);
+            TestSelectedStack(stack, masteryLevel);
+        }
+        
+        public void TestStack(int stackIndex, SkillMasteryLevel masteryLevel = SkillMasteryLevel.Glass) {
             var stack = StacksManager.Instance.GetStack(stackIndex);
+            TestSelectedStack(stack, masteryLevel);
+        }
+
+        private void TestSelectedStack(Transform stack, SkillMasteryLevel masteryLevel) {
             foreach (Transform child in stack) {
                 if (child.TryGetComponent(out BlockSkillDataHolder jengaBlock) && jengaBlock.GetMasteryLevel() == masteryLevel) {
                     Destroy(child.gameObject);

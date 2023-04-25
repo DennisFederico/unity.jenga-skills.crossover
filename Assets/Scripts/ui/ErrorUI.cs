@@ -9,7 +9,7 @@ namespace ui {
         [SerializeField] private Button exitButton;
 
         private void Awake() {
-            exitButton.onClick.AddListener(() => Application.Quit());
+            exitButton.onClick.AddListener(Application.Quit);
             Hide();
         }
 

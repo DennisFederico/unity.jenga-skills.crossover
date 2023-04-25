@@ -21,7 +21,7 @@ namespace managers {
         public SortedDictionary<string, SortedList<SkillData.SkillDataKey, SkillData>> SortedSkillsByGrade { get; private set; }
         public event Action<string> OnAnyError;
         private event Action<string> OnJsonLoaded;
-        private event Action OnStacksLoaded;
+        public event Action OnStacksLoaded;
         
         #region StandardUnity
         private void Awake() {
@@ -35,7 +35,6 @@ namespace managers {
         }
 
         private void Start() {
-            OnStacksLoaded += () => SceneLoadManager.Instance.LoadScene(SceneLoadManager.Scene.GameScene);
             OnJsonLoaded += ParseJson;
 
             StartCoroutine(_skillDataLoadConfigSO.dataLoadSource == DataLoadSource.Remote ? 
