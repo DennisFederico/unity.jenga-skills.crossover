@@ -15,6 +15,9 @@ namespace managers {
         public static StacksManager Instance { get; private set; }
 
         public event Action OnStacksBuilt;
+        public event Action OnStacksBuilding;
+        public event Action<int> OnStackBuilding;
+        public event Action<int> OnStackBuilt;
 
         private GameConfigSO _gameConfig;
 
@@ -23,10 +26,10 @@ namespace managers {
         private float _stacksPadding;
         private float _stackWidth;
 
-        private readonly Dictionary<int,Transform> _stacks = new();
+        private readonly Dictionary<int, Transform> _stacks = new();
         private readonly List<Transform> _focusPov = new();
         private readonly Dictionary<string, int> _gradeStackIndexMap = new();
-        private readonly Dictionary<int,string> _stackIndexGradeMap = new();
+        private readonly Dictionary<int, string> _stackIndexGradeMap = new();
 
         private float StackXOffset(int numStack) => numStack * (_stackWidth + _stacksPadding);
         private readonly Quaternion _rotation90 = Quaternion.Euler(0, 90, 0);
@@ -44,17 +47,17 @@ namespace managers {
             _blockSize = _gameConfig.blockPrefab.GetComponent<BoxCollider>().size;
             _stackWidth = Mathf.Max(_blockSize.x, _blockSize.z);
             _stacksPadding = _stackWidth * 1.5f;
-            BuildAllStacks();
-            OnStacksBuilt?.Invoke();
+            StartCoroutine(BuildAllStacks());
         }
 
-        private void BuildAllStacks() {
+        private IEnumerator BuildAllStacks() {
             var skillsByGrade = StacksDataLoader.Instance.SortedSkillsByGrade;
             int stackNum = 0;
-            
+
+            List<Coroutine> coroutines = new();
             //First build the Stacks
             foreach (var grade in skillsByGrade.Keys) {
-                BuildSingleStack(stackNum, grade, skillsByGrade[grade].Values);
+                coroutines.Add(StartCoroutine(BuildSingleStack(stackNum, grade, skillsByGrade[grade].Values)));
                 _gradeStackIndexMap.Add(grade, stackNum);
                 _stackIndexGradeMap.Add(stackNum, grade);
                 stackNum++;
@@ -63,21 +66,27 @@ namespace managers {
                     break;
                 }
             }
-            
+
             //Now build the labels and camera focus points
             for (var stackIndex = 0; stackIndex < _stacks.Count; stackIndex++) {
                 var skillsCount = skillsByGrade[_stackIndexGradeMap[stackIndex]].Values.Count;
                 _focusPov.Add(CreateStackFocusPoint(stackIndex, skillsCount));
                 CreateStackLabel(stackIndex, _stackIndexGradeMap[stackIndex]);
             }
+            
+            OnStacksBuilding?.Invoke();
+            //Wait for all stacks to be built
+            foreach (var coroutine in coroutines) {
+                yield return coroutine;
+            }
+            OnStacksBuilt?.Invoke();
         }
 
-        private void BuildSingleStack(int stackNum, string grade, IList<SkillData> skills) {
+        private IEnumerator BuildSingleStack(int stackNum, string grade, IList<SkillData> skills) {
             var stack = new GameObject(grade);
             stack.transform.position = new Vector3(StackXOffset(stackNum), 0, 0);
             _stacks.Add(stackNum, stack.transform);
-            //BuildStackBlocks(stack.transform, skills);
-            StartCoroutine(BuildStackBlocks(stack.transform, skills));
+            yield return StartCoroutine(BuildStackBlocks(stack.transform, skills));
         }
 
         private IEnumerator BuildStackBlocks(Transform stackParent, IList<SkillData> skills) {
@@ -139,18 +148,24 @@ namespace managers {
         public Transform GetStack(int stackIndex) {
             return _stacks[stackIndex];
         }
-        
+
         public Transform GetStack(string grade) {
             return _stacks[_gradeStackIndexMap[grade]];
         }
+
+        public void RebuildStackAsync(int numStack) {
+            StartCoroutine(RebuildStack(numStack));
+        }
         
-        public void RebuildStack(int numStack) {
+        private IEnumerator RebuildStack(int numStack) {
+            OnStackBuilding?.Invoke(numStack);
             if (_stacks.TryGetValue(numStack, out var stack)) {
                 Destroy(stack.gameObject);
                 _stacks.Remove(numStack);
             }
             var grade = _stackIndexGradeMap[numStack];
-            BuildSingleStack(numStack, grade, StacksDataLoader.Instance.SortedSkillsByGrade[grade].Values);
+            yield return StartCoroutine(BuildSingleStack(numStack, grade, StacksDataLoader.Instance.SortedSkillsByGrade[grade].Values));
+            OnStackBuilt?.Invoke(numStack);
         }
     }
 }

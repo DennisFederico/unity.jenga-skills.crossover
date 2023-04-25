@@ -23,6 +23,7 @@ namespace ui {
         }
 
         private void EnableStartGame() {
+            startGameButton.interactable = true;
             loadingMessageContainer.SetActive(false);
         }
 

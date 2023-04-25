@@ -17,6 +17,7 @@ namespace managers {
         private GameConfigSO _gameConfig;
         private int _totalStacks;
         private int _currentStackIndex;
+        private bool _gameStarted;
 
         private void Awake() {
             if (Instance == null) {
@@ -27,14 +28,19 @@ namespace managers {
         }
 
         private void Start() {
-            StacksManager.Instance.OnStacksBuilt += () => {
+            StacksManager.Instance.OnStacksBuilding += () => {
                 _totalStacks = StacksManager.Instance.GetNumStacks();
                 _currentStackIndex = Mathf.FloorToInt(_totalStacks * 0.5f);
                 OnStackSelectionChange?.Invoke(StacksManager.Instance.GetStackFocusPoint(_currentStackIndex));
             };
+            
+            StacksManager.Instance.OnStacksBuilt += () => {
+                _gameStarted = true;
+            };
         }
 
         private void Update() {
+            if (!_gameStarted) return;
             if (Input.GetKeyDown(KeyCode.Space)) {
                 OnSelectedStackAction?.Invoke(_currentStackIndex);
                 //TestStack(_currentStackIndex);
@@ -76,7 +82,7 @@ namespace managers {
         }
         
         public void RebuildStack(int stackIndex) {
-            StacksManager.Instance.RebuildStack(stackIndex);
+            StacksManager.Instance.RebuildStackAsync(stackIndex);
         }
 
         public void ExitGame() {
