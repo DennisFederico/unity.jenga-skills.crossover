@@ -67,5 +67,9 @@ namespace managers {
                 }
             }
         }
+
+        public void ExitGame() {
+            Application.Quit();
+        }
     }
 }
