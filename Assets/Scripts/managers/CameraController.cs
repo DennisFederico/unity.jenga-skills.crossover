@@ -12,11 +12,11 @@ namespace managers {
 
         private void Awake() {
             _transposer = virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
-            _transposer.m_CameraDistance = StartingCameraDistance*2;
+            _transposer.m_CameraDistance = _cameraDistanceRange.max;
         }
 
         private void Start() {
-            GameManager.Instance.OnStackFocusChange += SetCameraTarget;
+            GameManager.Instance.OnStackSelectionChange += SetCameraTarget;
         }
 
         private void LateUpdate() {
@@ -28,12 +28,11 @@ namespace managers {
             if (scrollInput == 0f) return;
             
             float newDistance = _transposer.m_CameraDistance - scrollInput * _scrollSpeed;
-            //newDistance = Mathf.Clamp(newDistance, _cameraDistanceRange.min, _cameraDistanceRange.max);
             _transposer.m_CameraDistance = Mathf.Clamp(newDistance, _cameraDistanceRange.min, _cameraDistanceRange.max);
         }
 
         private void OnDestroy() {
-            GameManager.Instance.OnStackFocusChange -= SetCameraTarget;
+            GameManager.Instance.OnStackSelectionChange -= SetCameraTarget;
         }
 
         private void HandleCameraRotation() {

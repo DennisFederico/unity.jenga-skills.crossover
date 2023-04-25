@@ -12,7 +12,7 @@ namespace managers {
         public static GameManager Instance { get; private set; }
         
         //Action with the center of the stack as parameter
-        public event Action<Transform> OnStackFocusChange;
+        public event Action<Transform> OnStackSelectionChange;
         private GameConfigSO _gameConfig;
         private int _totalStacks;
         private int _currentStackIndex;
@@ -28,7 +28,9 @@ namespace managers {
         private void Start() {
             StacksManager.Instance.OnStacksBuilt += () => {
                 _totalStacks = StacksManager.Instance.GetNumStacks();
-                OnStackFocusChange?.Invoke(StacksManager.Instance.GetStackFocusPoint(_currentStackIndex));
+                _currentStackIndex = Mathf.FloorToInt(_totalStacks * 0.5f);
+                Debug.Log($"Selecting stack {_currentStackIndex}");
+                OnStackSelectionChange?.Invoke(StacksManager.Instance.GetStackFocusPoint(_currentStackIndex));
             };
         }
 
@@ -51,7 +53,7 @@ namespace managers {
             var newIndex = Mathf.Clamp(stackIndex, 0, _totalStacks - 1);
             if (newIndex == _currentStackIndex) return;
             _currentStackIndex = newIndex;
-            OnStackFocusChange?.Invoke(StacksManager.Instance.GetStackFocusPoint(_currentStackIndex));
+            OnStackSelectionChange?.Invoke(StacksManager.Instance.GetStackFocusPoint(_currentStackIndex));
         }
         
         public void TestStack(string grade, SkillMasteryLevel masteryLevel = SkillMasteryLevel.Glass) {
