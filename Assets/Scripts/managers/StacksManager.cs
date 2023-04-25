@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using behaviours;
+using behaviours.block;
 using behaviours.config;
 using model;
 using scriptable;
@@ -80,9 +80,8 @@ namespace managers {
                     block.transform.localPosition = new Vector3(oddRowXOffset, rowHeight * _blockSize.y, oddRowZOffset + placeInRow * _blockSize.x);
                 }
 
-                var jengaBlock = block.GetComponent<JengaBlock>();
-                jengaBlock.SetSkillData(skill);
-                jengaBlock.SetMaterial((SkillMasteryLevel)skill.mastery, _gameConfig.masteryMaterialMap.GetMaterial(skill.mastery));
+                block.GetComponent<BlockSkillDataHolder>().SetSkillData(skill);
+                block.GetComponent<BlockMaterialHandler>().SetMaterial(_gameConfig.masteryMaterialMap.GetMaterial(skill.mastery));
                 blockCount++;
             }
         }

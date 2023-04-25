@@ -1,9 +1,7 @@
-using System;
-using behaviours;
+using behaviours.block;
 using behaviours.config;
 using model;
 using scriptable;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace managers {
@@ -44,7 +42,7 @@ namespace managers {
         private void TestSelectedStack(int stackIndex, SkillMasteryLevel masteryLevel = SkillMasteryLevel.Glass) {
             var stack = StacksManager.Instance.GetStack(stackIndex);
             foreach (Transform child in stack) {
-                if (child.TryGetComponent(out JengaBlock jengaBlock) && jengaBlock.GetMasteryLevel() == masteryLevel) {
+                if (child.TryGetComponent(out BlockSkillDataHolder jengaBlock) && jengaBlock.GetMasteryLevel() == masteryLevel) {
                     Destroy(child.gameObject);
                 }
             }
