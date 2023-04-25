@@ -22,9 +22,10 @@ namespace managers {
         private float _stacksPadding;
         private float _stackWidth;
 
-        private readonly List<Transform> _stacks = new();
+        private readonly Dictionary<int,Transform> _stacks = new();
         private readonly List<Transform> _focusPov = new();
         private readonly Dictionary<string, int> _gradeStackIndexMap = new();
+        private readonly Dictionary<int,string> _stackIndexGradeMap = new();
 
         private float StackXOffset(int numStack) => numStack * (_stackWidth + _stacksPadding);
         private readonly Quaternion _rotation90 = Quaternion.Euler(0, 90, 0);
@@ -42,28 +43,40 @@ namespace managers {
             _blockSize = _gameConfig.blockPrefab.GetComponent<BoxCollider>().size;
             _stackWidth = Mathf.Max(_blockSize.x, _blockSize.z);
             _stacksPadding = _stackWidth * 1.5f;
-            BuildStacks();
+            BuildAllStacks();
             OnStacksBuilt?.Invoke();
         }
 
-        private void BuildStacks() {
+        private void BuildAllStacks() {
             var skillsByGrade = StacksDataLoader.Instance.SortedSkillsByGrade;
             int stackNum = 0;
+            
+            //First build the Stacks
             foreach (var grade in skillsByGrade.Keys) {
-                var stack = new GameObject(grade);
-                _stacks.Add(stack.transform);
+                BuildSingleStack(stackNum, grade, skillsByGrade[grade].Values);
                 _gradeStackIndexMap.Add(grade, stackNum);
-                BuildStackBlocks(stack.transform, skillsByGrade[grade].Values);
-                stack.transform.position = new Vector3(StackXOffset(stackNum), 0, 0);
-                CreateStackLabel(stackNum, grade);
-                _focusPov.Add(CreateStackFocusPoint(stack.transform, stackNum));
-
+                _stackIndexGradeMap.Add(stackNum, grade);
                 stackNum++;
                 //Max stacks to display reached
                 if (stackNum >= _gameConfig.maxStacks) {
                     break;
                 }
             }
+            
+            //Now build the labels and camera focus points
+            for (var stackIndex = 0; stackIndex < _stacks.Count; stackIndex++) {
+                var stack = _stacks[stackIndex];
+                _focusPov.Add(CreateStackFocusPoint(stackIndex, stack.transform));
+                CreateStackLabel(stackIndex, _stackIndexGradeMap[stackIndex]);
+            }
+        }
+
+        private void BuildSingleStack(int stackNum, string grade, IList<SkillData> skills) {
+            var stack = new GameObject(grade);
+            _stacks.Remove(stackNum);
+            _stacks.Add(stackNum, stack.transform);
+            BuildStackBlocks(stack.transform, skills);
+            stack.transform.position = new Vector3(StackXOffset(stackNum), 0, 0);
         }
 
         private void BuildStackBlocks(Transform stackParent, IList<SkillData> skills) {
@@ -92,7 +105,7 @@ namespace managers {
         private void CreateStackLabel(int stackNum, string grade) {
             var stackLabelCanvas = Instantiate(_gameConfig.stackLabelCanvasPrefab);
             stackLabelCanvas.name = $"StackLabelCanvas_{stackNum}";
-            stackLabelCanvas.GetComponent<StackLabelUI>().SetGrade(grade);
+            stackLabelCanvas.GetComponent<StackLabelUI>().SetGradeAndIndex(grade, stackNum);
 
             var canvasRect = stackLabelCanvas.GetComponent<RectTransform>();
             var scale = Utils.CanvasToWorldScale(_stackWidth * 1.5f, canvasRect.rect.width);
@@ -100,7 +113,7 @@ namespace managers {
             stackLabelCanvas.transform.localScale = Vector3.one * scale;
         }
 
-        private Transform CreateStackFocusPoint(Transform stack, int stackNum) {
+        private Transform CreateStackFocusPoint(int stackNum, Transform stack) {
             var stackCenter = CalculateStackCenter(stack);
             float xOffset = StackXOffset(stackNum);
             float yOffset = _blockSize.y * 0.5f;
@@ -127,11 +140,16 @@ namespace managers {
         }
         
         public Transform GetStack(string grade) {
-            return _stacks[GetStackIndex(grade)];
+            return _stacks[_gradeStackIndexMap[grade]];
         }
         
-        public int GetStackIndex(string grade) {
-            return _gradeStackIndexMap[grade];
+        public void RebuildStack(int numStack) {
+            if (_stacks.TryGetValue(numStack, out var stack)) {
+                Destroy(stack.gameObject);
+                _stacks.Remove(numStack);
+            }
+            var grade = _stackIndexGradeMap[numStack];
+            BuildSingleStack(numStack, grade, StacksDataLoader.Instance.SortedSkillsByGrade[grade].Values);
         }
     }
 }

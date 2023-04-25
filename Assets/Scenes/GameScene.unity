@@ -1337,12 +1337,13 @@ MonoBehaviour:
   m_text: 'Use the <b>Left/Right</b> arrow keys to select a Stack\n
 
     Press <b>Space</b>
-    to <i>Test</i> the selected Stack\n
+    to perform the available action for the selected Stack <i>(<b>Test<b> / Reset)</i>\n
 
-    Hold <b>Right Mouse button<b> to orbit
-    around the Stack\n
+    Hold
+    <b>Right Mouse button<b> to orbit around the Stack\n
 
-    <b>Left Click</b> on any Stack block to see it details'
+    <b>Left Click</b> on
+    any Stack block to see it details'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2100000, guid: 79459efec17a4d00a321bdcc27bbc385, type: 2}
@@ -1369,7 +1370,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18.8
+  m_fontSize: 18.75
   m_fontSizeBase: 36
   m_fontWeight: 400
   m_enableAutoSizing: 1

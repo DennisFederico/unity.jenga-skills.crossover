@@ -13,6 +13,7 @@ namespace managers {
         
         //Action with the center of the stack as parameter
         public event Action<Transform> OnStackSelectionChange;
+        public event Action<int> OnSelectedStackAction;
         private GameConfigSO _gameConfig;
         private int _totalStacks;
         private int _currentStackIndex;
@@ -29,14 +30,14 @@ namespace managers {
             StacksManager.Instance.OnStacksBuilt += () => {
                 _totalStacks = StacksManager.Instance.GetNumStacks();
                 _currentStackIndex = Mathf.FloorToInt(_totalStacks * 0.5f);
-                Debug.Log($"Selecting stack {_currentStackIndex}");
                 OnStackSelectionChange?.Invoke(StacksManager.Instance.GetStackFocusPoint(_currentStackIndex));
             };
         }
 
         private void Update() {
             if (Input.GetKeyDown(KeyCode.Space)) {
-                TestStack(_currentStackIndex);
+                OnSelectedStackAction?.Invoke(_currentStackIndex);
+                //TestStack(_currentStackIndex);
             }
         }
 
@@ -72,6 +73,10 @@ namespace managers {
                     Destroy(child.gameObject);
                 }
             }
+        }
+        
+        public void RebuildStack(int stackIndex) {
+            StacksManager.Instance.RebuildStack(stackIndex);
         }
 
         public void ExitGame() {
