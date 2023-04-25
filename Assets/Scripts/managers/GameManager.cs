@@ -11,6 +11,8 @@ namespace managers {
         
         public static GameManager Instance { get; private set; }
         
+        //Action with the center of the stack as parameter
+        public event Action<Transform> OnStackFocusChange;
         private GameConfigSO _gameConfig;
         private int _totalStacks;
         private int _currentStackIndex;
@@ -26,7 +28,7 @@ namespace managers {
         private void Start() {
             StacksManager.Instance.OnStacksBuilt += () => {
                 _totalStacks = StacksManager.Instance.GetNumStacks();
-                CameraController.Instance.SetCameraTarget(StacksManager.Instance.GetStackFocusPoint(_currentStackIndex));
+                OnStackFocusChange?.Invoke(StacksManager.Instance.GetStackFocusPoint(_currentStackIndex));
             };
         }
 
@@ -38,16 +40,18 @@ namespace managers {
 
         private void LateUpdate() {
             if (Input.GetKeyDown(KeyCode.RightArrow)) {
-                SwitchPov(_currentStackIndex++);
+                SwitchPov(_currentStackIndex + 1);
             }
             if (Input.GetKeyDown(KeyCode.LeftArrow)) {
-                SwitchPov(_currentStackIndex--);
+                SwitchPov(_currentStackIndex- 1);
             }
         }
         
         private void SwitchPov(int stackIndex) {
-            _currentStackIndex = Mathf.Clamp(_currentStackIndex, 0, _totalStacks - 1);
-            CameraController.Instance.SetCameraTarget(StacksManager.Instance.GetStackFocusPoint(_currentStackIndex));
+            var newIndex = Mathf.Clamp(stackIndex, 0, _totalStacks - 1);
+            if (newIndex == _currentStackIndex) return;
+            _currentStackIndex = newIndex;
+            OnStackFocusChange?.Invoke(StacksManager.Instance.GetStackFocusPoint(_currentStackIndex));
         }
         
         public void TestStack(string grade, SkillMasteryLevel masteryLevel = SkillMasteryLevel.Glass) {

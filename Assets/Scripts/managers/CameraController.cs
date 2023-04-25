@@ -1,27 +1,22 @@
-using System;
 using Cinemachine;
 using UnityEngine;
 
 namespace managers {
     public class CameraController : MonoBehaviour {
-        public static CameraController Instance { get; private set; }
         [SerializeField] private CinemachineVirtualCamera virtualCamera;
         private CinemachineFramingTransposer _transposer;
-        private float _startingCameraDistance = 25;
+        private const float StartingCameraDistance = 25;
         private readonly (float min, float max) _cameraDistanceRange = (15f, 35f);
         private readonly float _scrollSpeed = 3f;
-        private Transform _currentTarget;
         private int _totalStacks;
-        private int _currentStackPovIndex = 0;
 
         private void Awake() {
-            if (Instance == null) {
-                Instance = this;
-            } else {
-                Destroy(gameObject);
-            }
             _transposer = virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
-            _transposer.m_CameraDistance = _startingCameraDistance*2;
+            _transposer.m_CameraDistance = StartingCameraDistance*2;
+        }
+
+        private void Start() {
+            GameManager.Instance.OnStackFocusChange += SetCameraTarget;
         }
 
         private void LateUpdate() {
@@ -36,7 +31,11 @@ namespace managers {
             //newDistance = Mathf.Clamp(newDistance, _cameraDistanceRange.min, _cameraDistanceRange.max);
             _transposer.m_CameraDistance = Mathf.Clamp(newDistance, _cameraDistanceRange.min, _cameraDistanceRange.max);
         }
-        
+
+        private void OnDestroy() {
+            GameManager.Instance.OnStackFocusChange -= SetCameraTarget;
+        }
+
         private void HandleCameraRotation() {
             //if (!_currentTarget) return;
             var xAxis = Input.GetAxis("Mouse X");
@@ -47,8 +46,7 @@ namespace managers {
             virtualCamera.transform.localEulerAngles = rotation;
         }
 
-        public void SetCameraTarget(Transform target) {
-            _currentTarget = target;
+        private void SetCameraTarget(Transform target) {
             virtualCamera.Follow = target;
         }
     }
