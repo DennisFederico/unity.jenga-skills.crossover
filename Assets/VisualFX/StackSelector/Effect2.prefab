@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 212657326755046044}
   - component: {fileID: 95747726474849610}
   m_Layer: 0
-  m_Name: Target1green
+  m_Name: Effect2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -74,8 +74,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 2b754f029f0d34f78a6cbf531730c5df, type: 3}
-  m_Color: {r: 0.11175728, g: 1, b: 0, a: 1}
+  m_Sprite: {fileID: 21300000, guid: f770dc2b3085b46c182dd5c2895f791e, type: 3}
+  m_Color: {r: 1, g: 0.5372549, b: 0, a: 0.7058824}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -95,7 +95,7 @@ Animator:
   m_GameObject: {fileID: 1863587483777578}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: a449443facb30430693bb17e157e760e, type: 2}
+  m_Controller: {fileID: 9100000, guid: 68b0928bcea9d461b8147579e4f255b2, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

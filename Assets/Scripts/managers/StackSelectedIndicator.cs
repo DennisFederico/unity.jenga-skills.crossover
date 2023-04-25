@@ -5,17 +5,19 @@ namespace managers {
     [RequireComponent(typeof(GameConfigHolder))]
     public class StackSelectedIndicator : MonoBehaviour {
         
-        [SerializeField] private GameObject indicator;
-        private float _indicatorScale;
+        [SerializeField] private GameObject indicatorPrefab;
+        private GameObject _indicator;
         private const float EffectMaxTime = 0.75f;
         private float _effectTime;
         private bool _isEffecting;
 
         private void Awake() {
             var blockSize = GetComponent<GameConfigHolder>().GameConfig.blockPrefab.GetComponent<BoxCollider>().size;
-            _indicatorScale = Mathf.Max(blockSize.x,blockSize.z) * 1.5f;
-            indicator.transform.localScale = new Vector2(_indicatorScale, _indicatorScale);
-            indicator.SetActive(false);
+            var scale = Mathf.Max(blockSize.x,blockSize.z);
+            _indicator = Instantiate(indicatorPrefab);
+            _indicator.name= "StackSelectedIndicator";
+            _indicator.transform.localScale = new Vector2(scale, scale);
+            _indicator.SetActive(false);
         }
 
         private void Start() {
@@ -40,17 +42,17 @@ namespace managers {
             PositionIndicator(stackCenterMarker.position);
             _isEffecting = true;
             _effectTime = EffectMaxTime;
-            indicator.SetActive(true);
+            _indicator.SetActive(true);
         }
 
         private void StopEffect() {
             _isEffecting = false;
-            indicator.SetActive(false);
+            _indicator.SetActive(false);
         }
         
         private void PositionIndicator(Vector3 markerPosition) {
             var position = new Vector3(markerPosition.x, 0.1f, markerPosition.z);
-            indicator.transform.position = position;
+            _indicator.transform.position = position;
         }
     }
 }
