@@ -18,7 +18,7 @@ namespace managers {
         private float _stackWidth;
         private readonly List<Transform> _stacks = new();
         private readonly List<Transform> _focusPov = new();
-        private int _currentStackIndex = 0;
+        private int _currentStackIndex = 1;
 
         private float CanvasToWorldScale(float worldWidth, float canvasWidth) => worldWidth / canvasWidth;
         private float StackXOffset(int numStack) => numStack * (_stackWidth + _stacksPadding);
@@ -31,7 +31,7 @@ namespace managers {
             _stackWidth = Mathf.Max(_blockSize.x, _blockSize.z);
             _stacksPadding = _stackWidth * 1.5f;
             BuildStacks();
-            Debug.Log($"Size: {sizeof(SkillMasteryLevel)}");
+            CameraController.Instance.SetTarget(_focusPov[_currentStackIndex]);
         }
 
         private void BuildStacks() {
