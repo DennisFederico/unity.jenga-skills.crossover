@@ -1,4 +1,6 @@
+using System;
 using model;
+using ui;
 using UnityEngine;
 
 namespace behaviours {
@@ -19,11 +21,13 @@ namespace behaviours {
         public SkillMasteryLevel GetMasteryLevel() {
             return _masteryLevel;
         }
+
+        private void OnMouseEnter() {
+            TooltipUI.Instance.Show(_skillData.ToString());
+        }
         
-        // private void OnMouseOver() {
-        //     if (Input.GetMouseButtonDown(1)) {
-        //         GameManager.Instance.ShowInfoOnUI(transform.parent, _skillData);
-        //     }
-        // }
+        private void OnMouseExit() {
+            TooltipUI.Instance.Hide();
+        }
     }
 }

@@ -5,6 +5,7 @@ using behaviours.config;
 using model;
 using scriptable;
 using UnityEngine;
+using utils;
 
 namespace managers {
     [RequireComponent(typeof(GameConfigHolder))]
@@ -23,7 +24,6 @@ namespace managers {
         private readonly List<Transform> _stacks = new();
         private readonly List<Transform> _focusPov = new();
 
-        private float CanvasToWorldScale(float worldWidth, float canvasWidth) => worldWidth / canvasWidth;
         private float StackXOffset(int numStack) => numStack * (_stackWidth + _stacksPadding);
         private readonly Quaternion _rotation90 = Quaternion.Euler(0, 90, 0);
 
@@ -93,7 +93,7 @@ namespace managers {
             stackLabelCanvas.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = grade;
 
             var canvasRect = stackLabelCanvas.GetComponent<RectTransform>();
-            var scale = CanvasToWorldScale(_stackWidth * 1.5f, canvasRect.rect.width);
+            var scale = Utils.CanvasToWorldScale(_stackWidth * 1.5f, canvasRect.rect.width);
             stackLabelCanvas.transform.position = new Vector3(_stackWidth * 0.5f + StackXOffset(stackNum), canvasRect.rect.height * 0.5f * scale, -2);
             stackLabelCanvas.transform.localScale = Vector3.one * scale;
         }

@@ -26,7 +26,9 @@ namespace model {
         }
 
         public override string ToString() {
-            return $"{grade} - {domain}\n{cluster}\n{standardid} - {standarddescription}";
+            return $"<b><color=\"green\">{grade}: {domain}</color></b>\n" +
+                   $"<b><i>{cluster}</i></b>\n" +
+                   $"{standardid} - {standarddescription}";
         }
         
         public struct SkillDataKey : IComparable<SkillDataKey> {
