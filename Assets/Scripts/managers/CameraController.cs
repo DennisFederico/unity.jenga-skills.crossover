@@ -6,7 +6,13 @@ namespace managers {
     public class CameraController : MonoBehaviour {
         public static CameraController Instance { get; private set; }
         [SerializeField] private CinemachineVirtualCamera virtualCamera;
+        private CinemachineFramingTransposer _transposer;
+        private float _startingCameraDistance = 25;
+        private readonly (float min, float max) _cameraDistanceRange = (15f, 35f);
+        private readonly float _scrollSpeed = 3f;
         private Transform _currentTarget;
+        private int _totalStacks;
+        private int _currentStackPovIndex = 0;
 
         private void Awake() {
             if (Instance == null) {
@@ -14,17 +20,21 @@ namespace managers {
             } else {
                 Destroy(gameObject);
             }
+            _transposer = virtualCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
+            _transposer.m_CameraDistance = _startingCameraDistance*2;
         }
 
         private void LateUpdate() {
             if (Input.GetMouseButton(1)) {
                 HandleCameraRotation();
             }
-        }
-
-        public void SetTarget(Transform target) {
-            _currentTarget = target;
-            virtualCamera.Follow = target;
+            
+            var scrollInput = Input.GetAxis("Mouse ScrollWheel");
+            if (scrollInput == 0f) return;
+            
+            float newDistance = _transposer.m_CameraDistance - scrollInput * _scrollSpeed;
+            //newDistance = Mathf.Clamp(newDistance, _cameraDistanceRange.min, _cameraDistanceRange.max);
+            _transposer.m_CameraDistance = Mathf.Clamp(newDistance, _cameraDistanceRange.min, _cameraDistanceRange.max);
         }
         
         private void HandleCameraRotation() {
@@ -35,14 +45,11 @@ namespace managers {
             rotation.y += xAxis;
             rotation.x -= yAxis;
             virtualCamera.transform.localEulerAngles = rotation;
-            
-            //virtualCameraObject.transform.localEulerAngles to rotate the camera around the target.
-            //Then just tweak the Framing Transposer parameters until you've got a feel you like.
-            
-            // var position = target.position + (Vector3.up * 5);
-            // transform.position = position - (transform.forward * _radius);
-            // transform.RotateAround(position, Vector3.up, Input.GetAxis("Mouse X"));
-            // transform.RotateAround(position, transform.right, Input.GetAxis("Mouse Y"));
+        }
+
+        public void SetCameraTarget(Transform target) {
+            _currentTarget = target;
+            virtualCamera.Follow = target;
         }
     }
 }

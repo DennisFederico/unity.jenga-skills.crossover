@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92bfc9bbfd124fa098b2cb951ad16e6f, type: 3}
+  m_Name: StandardGameConfig
+  m_EditorClassIdentifier: 
+  blockPrefab: {fileID: 1484996719409804291, guid: f8a8a410426e54db9a1ef1150cf55bc4,
+    type: 3}
+  stackLabelCanvasPrefab: {fileID: 7875541881243746867, guid: 34faaaa5894a64145ae3dc68b3e1eb54,
+    type: 3}
+  masteryMaterialMap: {fileID: 11400000, guid: 242a63e5d1a564f24b7164d7971cd71c, type: 2}
+  maxStacks: 3
+  blocksPerRow: 3

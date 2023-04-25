@@ -3,13 +3,10 @@ using UnityEngine;
 namespace scriptable {
     [CreateAssetMenu(menuName = "GameConfigSO")]
     public class GameConfigSO : ScriptableObject {
-        public DataLoadSource dataLoadSource;
-        public string baseUrl;
-        public int maxStacks;
-    }
-    
-    public enum DataLoadSource {
-        Local,
-        Remote
+        public GameObject blockPrefab;
+        public GameObject stackLabelCanvasPrefab;
+        public MasteryMaterialSO masteryMaterialMap;
+        public int maxStacks = 3;
+        public int blocksPerRow = 3;
     }
 }

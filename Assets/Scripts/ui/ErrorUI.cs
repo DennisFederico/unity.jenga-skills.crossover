@@ -14,11 +14,11 @@ namespace ui {
         }
 
         private void Start() {
-            StacksManager.Instance.OnAnyError += Show;
+            StacksDataLoader.Instance.OnAnyError += Show;
         }
 
         private void OnDestroy() {
-            StacksManager.Instance.OnAnyError -= Show;
+            StacksDataLoader.Instance.OnAnyError -= Show;
         }
 
         public void Show(string message) {

@@ -538,6 +538,7 @@ GameObject:
   m_Component:
   - component: {fileID: 923529455}
   - component: {fileID: 923529456}
+  - component: {fileID: 923529457}
   m_Layer: 0
   m_Name: StacksManager
   m_TagString: Untagged
@@ -572,7 +573,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56bc34a4f1ee4ae28fbe8a52166042e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loadFromUrl: 0
+--- !u!114 &923529457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 923529454}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fd7781cdf2c4ff8ba92527a75086f6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  skillDataLoadConfig: {fileID: 11400000, guid: ddc576cb3392149829a56298ff0da546,
+    type: 2}
 --- !u!1 &1005796152
 GameObject:
   m_ObjectHideFlags: 0
