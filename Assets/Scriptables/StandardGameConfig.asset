@@ -17,5 +17,6 @@ MonoBehaviour:
   stackLabelCanvasPrefab: {fileID: 7875541881243746867, guid: 34faaaa5894a64145ae3dc68b3e1eb54,
     type: 3}
   masteryMaterialMap: {fileID: 11400000, guid: 242a63e5d1a564f24b7164d7971cd71c, type: 2}
+  blockPlacementSpeed: 0.1
   maxStacks: 3
   blocksPerRow: 3

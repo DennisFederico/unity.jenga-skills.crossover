@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using behaviours.block;
 using behaviours.config;
@@ -65,21 +66,21 @@ namespace managers {
             
             //Now build the labels and camera focus points
             for (var stackIndex = 0; stackIndex < _stacks.Count; stackIndex++) {
-                var stack = _stacks[stackIndex];
-                _focusPov.Add(CreateStackFocusPoint(stackIndex, stack.transform));
+                var skillsCount = skillsByGrade[_stackIndexGradeMap[stackIndex]].Values.Count;
+                _focusPov.Add(CreateStackFocusPoint(stackIndex, skillsCount));
                 CreateStackLabel(stackIndex, _stackIndexGradeMap[stackIndex]);
             }
         }
 
         private void BuildSingleStack(int stackNum, string grade, IList<SkillData> skills) {
             var stack = new GameObject(grade);
-            _stacks.Remove(stackNum);
-            _stacks.Add(stackNum, stack.transform);
-            BuildStackBlocks(stack.transform, skills);
             stack.transform.position = new Vector3(StackXOffset(stackNum), 0, 0);
+            _stacks.Add(stackNum, stack.transform);
+            //BuildStackBlocks(stack.transform, skills);
+            StartCoroutine(BuildStackBlocks(stack.transform, skills));
         }
 
-        private void BuildStackBlocks(Transform stackParent, IList<SkillData> skills) {
+        private IEnumerator BuildStackBlocks(Transform stackParent, IList<SkillData> skills) {
             float oddRowZOffset = _blockSize.x;
             float oddRowXOffset = 0;
 
@@ -99,6 +100,7 @@ namespace managers {
                 block.GetComponent<BlockSkillDataHolder>().SetSkillData(skill);
                 block.GetComponent<BlockMaterialHandler>().SetMaterial(_gameConfig.masteryMaterialMap.GetMaterial(skill.mastery));
                 blockCount++;
+                yield return new WaitForSeconds(_gameConfig.blockPlacementSpeed);
             }
         }
 
@@ -113,8 +115,8 @@ namespace managers {
             stackLabelCanvas.transform.localScale = Vector3.one * scale;
         }
 
-        private Transform CreateStackFocusPoint(int stackNum, Transform stack) {
-            var stackCenter = CalculateStackCenter(stack);
+        private Transform CreateStackFocusPoint(int stackNum, int numBlocks) {
+            var stackCenter = CalculateStackCenter(numBlocks);
             float xOffset = StackXOffset(stackNum);
             float yOffset = _blockSize.y * 0.5f;
             var stackPov = new GameObject($"POV_{stackNum}") {
@@ -125,8 +127,7 @@ namespace managers {
             return stackPov.transform;
         }
 
-        private Vector3 CalculateStackCenter(Transform stack) {
-            int numBlocks = stack.childCount;
+        private Vector3 CalculateStackCenter(int numBlocks) {
             int numRows = numBlocks / _gameConfig.blocksPerRow;
             return new Vector3(_blockSize.x * _gameConfig.blocksPerRow * 0.5f, _blockSize.y * numRows * 0.5f, _blockSize.z * 0.5f);
         }
