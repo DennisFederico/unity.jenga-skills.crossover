@@ -7,24 +7,22 @@ using scriptable;
 using UnityEngine;
 
 namespace managers {
-    
     [RequireComponent(typeof(GameConfigHolder))]
     public class StacksManager : MonoBehaviour {
-
         public static StacksManager Instance { get; private set; }
-        
+
         public event Action OnStacksBuilt;
-        
+
         private GameConfigSO _gameConfig;
-        
+
         //Cache variables to avoid repeated calls to GetComponent or other calculations
         private Vector3 _blockSize;
         private float _stacksPadding;
         private float _stackWidth;
-        
+
         private readonly List<Transform> _stacks = new();
         private readonly List<Transform> _focusPov = new();
-        
+
         private float CanvasToWorldScale(float worldWidth, float canvasWidth) => worldWidth / canvasWidth;
         private float StackXOffset(int numStack) => numStack * (_stackWidth + _stacksPadding);
         private readonly Quaternion _rotation90 = Quaternion.Euler(0, 90, 0);
@@ -36,7 +34,7 @@ namespace managers {
                 Destroy(gameObject);
             }
         }
-        
+
         private void Start() {
             _gameConfig = GetComponent<GameConfigHolder>().GameConfig;
             _blockSize = _gameConfig.blockPrefab.GetComponent<BoxCollider>().size;
@@ -45,7 +43,7 @@ namespace managers {
             BuildStacks();
             OnStacksBuilt?.Invoke();
         }
-        
+
         private void BuildStacks() {
             var skillsByGrade = StacksDataLoader.Instance.SortedSkillsByGrade;
             int stackNum = 0;
@@ -64,7 +62,7 @@ namespace managers {
                 }
             }
         }
-        
+
         private void BuildStackBlocks(Transform stackParent, IList<SkillData> skills) {
             float oddRowZOffset = _blockSize.x;
             float oddRowXOffset = 0;
@@ -84,11 +82,11 @@ namespace managers {
 
                 var jengaBlock = block.GetComponent<JengaBlock>();
                 jengaBlock.SetSkillData(skill);
-                jengaBlock.SetMaterial(_gameConfig.masteryMaterialMap.GetMaterial(skill.mastery));
+                jengaBlock.SetMaterial((SkillMasteryLevel)skill.mastery, _gameConfig.masteryMaterialMap.GetMaterial(skill.mastery));
                 blockCount++;
             }
         }
-        
+
         private void CreateStackLabel(int stackNum, string grade) {
             var stackLabelCanvas = Instantiate(_gameConfig.stackLabelCanvasPrefab);
             stackLabelCanvas.name = $"StackLabelCanvas_{stackNum}";
@@ -99,7 +97,7 @@ namespace managers {
             stackLabelCanvas.transform.position = new Vector3(_stackWidth * 0.5f + StackXOffset(stackNum), canvasRect.rect.height * 0.5f * scale, -2);
             stackLabelCanvas.transform.localScale = Vector3.one * scale;
         }
-        
+
         private Transform CreateStackFocusPoint(Transform stack, int stackNum) {
             var stackCenter = CalculateStackCenter(stack);
             float xOffset = StackXOffset(stackNum);
@@ -111,15 +109,19 @@ namespace managers {
             };
             return stackPov.transform;
         }
-        
+
         private Vector3 CalculateStackCenter(Transform stack) {
             int numBlocks = stack.childCount;
             int numRows = numBlocks / _gameConfig.blocksPerRow;
             return new Vector3(_blockSize.x * _gameConfig.blocksPerRow * 0.5f, _blockSize.y * numRows * 0.5f, _blockSize.z * 0.5f);
         }
-     
+
         public int GetNumStacks() => _stacks.Count;
-        
+
         public Transform GetStackFocusPoint(int stackNum) => _focusPov[stackNum];
+
+        public Transform GetStack(int stackIndex) {
+            return _stacks[stackIndex];
+        }
     }
 }

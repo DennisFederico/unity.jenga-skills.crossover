@@ -3,8 +3,8 @@ namespace model {
     /// enum that represents the mastery level of a specific domain skill.
     /// </summary>
     public enum SkillMasteryLevel {
-        Level0,
-        Level1,
-        Level2
+        Glass,
+        Wood,
+        Stone
     }
 }
