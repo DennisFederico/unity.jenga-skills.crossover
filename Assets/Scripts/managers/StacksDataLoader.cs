@@ -5,6 +5,7 @@ using System.IO;
 using behaviours.config;
 using model;
 using scriptable;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -13,6 +14,7 @@ namespace managers {
     public class StacksDataLoader : MonoBehaviour {
         public static StacksDataLoader Instance { get; private set; }
         private SkillDataLoadConfigSO _skillDataLoadConfigSO;
+        [SerializeField] private TextMeshProUGUI pathText;
 
         private SkillDataArray AllSkillsData { get; set; }
 
@@ -37,9 +39,17 @@ namespace managers {
         private void Start() {
             OnJsonLoaded += ParseJson;
 
-            StartCoroutine(_skillDataLoadConfigSO.dataLoadSource == DataLoadSource.Remote ? 
-                LoadJsonFromUrl(OnJsonLoaded, OnAnyError) : 
-                LoadJsonFromLocal(OnJsonLoaded, OnAnyError));
+            switch (_skillDataLoadConfigSO.dataLoadSource) {
+                case DataLoadSource.Remote:
+                    StartCoroutine(LoadJsonFromUrl(OnJsonLoaded, OnAnyError));
+                    break;
+                case DataLoadSource.Local:
+                    StartCoroutine(LoadJsonFromLocal(OnJsonLoaded, OnAnyError));
+                    break;
+                case DataLoadSource.WebGL:
+                    StartCoroutine(LoadJsonFromResources(OnJsonLoaded, OnAnyError));
+                    break;
+            }
         }
         #endregion
 
@@ -73,6 +83,19 @@ namespace managers {
             }
         }
         
+        private IEnumerator LoadJsonFromResources(Action<string> onSuccessCallback, Action<string> onErrorCallback = null) {
+            //TextAsset jsonFile = Resources.Load(_skillDataLoadConfigSO.baseUrl) as TextAsset;
+            ResourceRequest resourceRequest = Resources.LoadAsync<TextAsset>(_skillDataLoadConfigSO.baseUrl);
+            yield return resourceRequest;
+
+            if (resourceRequest.asset) {
+                onSuccessCallback(((TextAsset)resourceRequest.asset).text);
+            } else {
+                Debug.LogError($"Error loading JSON from WebGL: {_skillDataLoadConfigSO.baseUrl}");
+                onErrorCallback?.Invoke($"Error loading JSON from WebGL: {_skillDataLoadConfigSO.baseUrl}");
+            }
+        }
+        
         private void ParseJson(string json) {
             try {
                 AllSkillsData = JsonUtility.FromJson<SkillDataArray>($"{{\"skills\":{json}}}");
@@ -81,7 +104,6 @@ namespace managers {
                 //clearing the data from memory
                 AllSkillsData.skills = null;
                 AllSkillsData = null;
-                
                 OnStacksLoaded?.Invoke();
             } catch (Exception e) {
                 Debug.LogError(e);

@@ -4,7 +4,6 @@ using UnityEngine.SceneManagement;
 namespace managers {
     public class SceneLoadManager : MonoBehaviour {
         public enum Scene {
-            MenuScene,
             LoadingScene,
             GameScene,
         }

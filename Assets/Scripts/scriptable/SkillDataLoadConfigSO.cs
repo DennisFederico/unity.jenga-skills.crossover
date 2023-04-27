@@ -9,6 +9,7 @@ namespace scriptable {
     
     public enum DataLoadSource {
         Local,
-        Remote
+        Remote,
+        WebGL
     }
 }

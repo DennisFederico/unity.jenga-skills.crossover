@@ -86,7 +86,8 @@ namespace managers {
         }
 
         public void ExitGame() {
-            Application.Quit();
+            //Application.Quit();
+            SceneLoadManager.Instance.LoadScene(SceneLoadManager.Scene.LoadingScene);
         }
     }
 }
